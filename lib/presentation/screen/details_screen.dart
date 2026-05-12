@@ -57,13 +57,13 @@ class _DetailsScreenState extends State<DetailsScreen> {
             flexibleSpace: FlexibleSpaceBar(
               background: widget.movie.backdropPath != null
                   ? CachedNetworkImage(
-                imageUrl:
-                '${AppStrings.imageBaseUrl}${widget.movie.backdropPath}',
-              )
+                      imageUrl:
+                          '${AppStrings.imageBaseUrl}${widget.movie.backdropPath}',
+                    )
                   : CachedNetworkImage(
-                imageUrl:
-                '${AppStrings.imageBaseUrl}${widget.movie.posterPath}',
-              ),
+                      imageUrl:
+                          '${AppStrings.imageBaseUrl}${widget.movie.posterPath}',
+                    ),
             ),
           ),
           SliverToBoxAdapter(

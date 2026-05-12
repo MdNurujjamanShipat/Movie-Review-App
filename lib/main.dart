@@ -16,7 +16,9 @@ class MyApp extends StatelessWidget {
       create: (context) => MovieProvider(),
       child: MaterialApp(
         title: 'Flutter Demo',
-        theme: ThemeData(colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple)),
+        theme: ThemeData(
+          colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
+        ),
         home: HomeScreen(),
       ),
     );

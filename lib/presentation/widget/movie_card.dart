@@ -24,16 +24,16 @@ class MovieCard extends StatelessWidget {
               ),
               child: movie.posterPath != null
                   ? Image.network(
-                'https://image.tmdb.org/t/p/w500${movie.posterPath}',
-                width: 100,
-                height: 150,
-                fit: BoxFit.cover,
-                errorBuilder: (_, __, ___) => Container(
-                  width: 100,
-                  height: 150,
-                  color: Colors.grey,
-                ),
-              )
+                      'https://image.tmdb.org/t/p/w500${movie.posterPath}',
+                      width: 100,
+                      height: 150,
+                      fit: BoxFit.cover,
+                      errorBuilder: (_, __, ___) => Container(
+                        width: 100,
+                        height: 150,
+                        color: Colors.grey,
+                      ),
+                    )
                   : Container(width: 100, height: 150, color: Colors.grey),
             ),
             const SizedBox(width: 12),
