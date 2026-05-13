@@ -23,6 +23,12 @@ class MovieProvider extends ChangeNotifier {
   String _errorMessage = '';
   String get errorMessage => _errorMessage;
 
+  bool _isRating = false;
+  bool get isRating => _isRating;
+
+  bool _isDeletingRating = false;
+  bool get isDeletingRating => _isDeletingRating;
+
   List<Movie> get allMovies => [
     ..._trendingMovies,
     ..._popularMovies,
@@ -79,6 +85,40 @@ class MovieProvider extends ChangeNotifier {
       return {};
     } finally {
       _isLoading = false;
+      notifyListeners();
+    }
+  }
+
+  Future<bool> rateMovie(int movieId, double rating) async {
+    _isRating = true;
+    notifyListeners();
+
+    try {
+      final success = await _apiService.rateMovie(movieId, rating);
+      _errorMessage = '';
+      return success;
+    } catch (e) {
+      _errorMessage = e.toString();
+      return false;
+    } finally {
+      _isRating = false;
+      notifyListeners();
+    }
+  }
+
+  Future<bool> deleteRating(int movieId) async {
+    _isDeletingRating = true;
+    notifyListeners();
+
+    try {
+      final success = await _apiService.deleteRating(movieId);
+      _errorMessage = '';
+      return success;
+    } catch (e) {
+      _errorMessage = e.toString();
+      return false;
+    } finally {
+      _isDeletingRating = false;
       notifyListeners();
     }
   }
