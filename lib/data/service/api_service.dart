@@ -31,6 +31,48 @@ class ApiService {
     }
   }
 
+  Future<List<Movie>> getPopularMovies() async {
+    final url = Uri.parse('${AppStrings.baseUrl}/movie/popular');
+    debugPrint('GET $url');
+
+    final response = await http.get(
+      url,
+      headers: {
+        'Authorization': AppStrings.authorizationToken,
+        'accept': 'application/json',
+      },
+    );
+
+    if (response.statusCode == 200) {
+      final json = jsonDecode(response.body);
+      final List results = json['results'];
+      return results.map((e) => MovieModel.fromJson(e)).toList();
+    } else {
+      throw Exception('Failed to load popular movies');
+    }
+  }
+
+  Future<List<Movie>> getUpcomingMovies() async {
+    final url = Uri.parse('${AppStrings.baseUrl}/movie/upcoming');
+    debugPrint('GET $url');
+
+    final response = await http.get(
+      url,
+      headers: {
+        'Authorization': AppStrings.authorizationToken,
+        'accept': 'application/json',
+      },
+    );
+
+    if (response.statusCode == 200) {
+      final json = jsonDecode(response.body);
+      final List results = json['results'];
+      return results.map((e) => MovieModel.fromJson(e)).toList();
+    } else {
+      throw Exception('Failed to load upcoming movies');
+    }
+  }
+
   Future<List<Movie>> searchMovies(String query) async {
     final url = Uri.parse('${AppStrings.baseUrl}/search/movie?query=$query');
     debugPrint('GET $url');

@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:movie_review_app/core/app_colors.dart';
 import 'package:movie_review_app/core/app_strings.dart';
 import 'package:movie_review_app/domain/entities/movie.dart';
+import 'package:movie_review_app/presentation/provider/favorites_provider.dart';
 import 'package:movie_review_app/presentation/provider/movie_provider.dart';
 import 'package:provider/provider.dart';
 
@@ -20,7 +21,6 @@ class _DetailsScreenState extends State<DetailsScreen> {
 
   @override
   void initState() {
-    // TODO: implement initState
     super.initState();
     _fetchMovieDetails();
   }
@@ -28,6 +28,7 @@ class _DetailsScreenState extends State<DetailsScreen> {
   void _fetchMovieDetails() async {
     final details = await Provider.of<MovieProvider>(
       context,
+      listen: false,
     ).fetchMovieDetails(widget.movie.id);
     if (mounted) {
       setState(() {
@@ -35,17 +36,39 @@ class _DetailsScreenState extends State<DetailsScreen> {
         isLoading = false;
       });
     }
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(content: Text('Fetched details for ${widget.movie.title}')),
-    );
   }
 
   @override
   Widget build(BuildContext context) {
+    final favoritesProvider = Provider.of<FavoritesProvider>(context);
+    final isFav = favoritesProvider.isFavorite(widget.movie.id);
+
     return Scaffold(
       appBar: AppBar(
-        title: Text(widget.movie.title, style: TextStyle(color: Colors.white)),
+        title: Text(
+          widget.movie.title,
+          style: const TextStyle(color: Colors.white),
+        ),
         backgroundColor: AppColors.surface,
+        actions: [
+          IconButton(
+            icon: Icon(
+              isFav ? Icons.favorite : Icons.favorite_border,
+              color: isFav ? Colors.red : Colors.white,
+            ),
+            onPressed: () {
+              favoritesProvider.toggleFavorite(widget.movie.id);
+              ScaffoldMessenger.of(context).showSnackBar(
+                SnackBar(
+                  content: Text(
+                    isFav ? 'Removed from favorites' : 'Added to favorites',
+                  ),
+                  duration: const Duration(seconds: 1),
+                ),
+              );
+            },
+          ),
+        ],
       ),
       backgroundColor: AppColors.surface,
       body: CustomScrollView(
@@ -59,45 +82,70 @@ class _DetailsScreenState extends State<DetailsScreen> {
                   ? CachedNetworkImage(
                       imageUrl:
                           '${AppStrings.imageBaseUrl}${widget.movie.backdropPath}',
+                      fit: BoxFit.cover,
                     )
                   : CachedNetworkImage(
                       imageUrl:
                           '${AppStrings.imageBaseUrl}${widget.movie.posterPath}',
+                      fit: BoxFit.cover,
                     ),
             ),
           ),
           SliverToBoxAdapter(
             child: Padding(
-              padding: const EdgeInsets.all(8.0),
+              padding: const EdgeInsets.all(16.0),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
                     widget.movie.title,
-                    style: TextStyle(
+                    style: const TextStyle(
                       color: AppColors.textPrimary,
-                      fontSize: 18,
+                      fontSize: 24,
+                      fontWeight: FontWeight.bold,
                     ),
                   ),
-                  SizedBox(height: 8),
+                  const SizedBox(height: 8),
                   Row(
                     children: [
-                      Icon(Icons.star, color: Colors.amber),
-                      SizedBox(width: 8),
+                      const Icon(Icons.star, color: Colors.amber),
+                      const SizedBox(width: 8),
                       Text(
-                        widget.movie.releaseDate,
-                        style: TextStyle(
+                        '${widget.movie.voteAverage} • ${widget.movie.releaseDate}',
+                        style: const TextStyle(
                           color: AppColors.textPrimary,
                           fontSize: 16,
                         ),
                       ),
                     ],
                   ),
-
+                  const SizedBox(height: 16),
+                  const Text(
+                    'Overview',
+                    style: TextStyle(
+                      color: AppColors.textPrimary,
+                      fontSize: 18,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                  const SizedBox(height: 8),
                   Text(
                     widget.movie.overview,
-                    style: TextStyle(color: AppColors.textPrimary),
+                    style: const TextStyle(color: AppColors.textPrimary),
                   ),
+                  const SizedBox(height: 24),
+                  if (movieDetails != null && movieDetails!['genres'] != null)
+                    Wrap(
+                      spacing: 8,
+                      children: (movieDetails!['genres'] as List)
+                          .map(
+                            (genre) => Chip(
+                              label: Text(genre['name']),
+                              backgroundColor: AppColors.accent,
+                            ),
+                          )
+                          .toList(),
+                    ),
                 ],
               ),
             ),

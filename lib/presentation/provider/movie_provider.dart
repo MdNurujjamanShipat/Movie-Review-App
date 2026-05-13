@@ -8,6 +8,12 @@ class MovieProvider extends ChangeNotifier {
   List<Movie> _trendingMovies = [];
   List<Movie> get trendingMovies => _trendingMovies;
 
+  List<Movie> _popularMovies = [];
+  List<Movie> get popularMovies => _popularMovies;
+
+  List<Movie> _upcomingMovies = [];
+  List<Movie> get upcomingMovies => _upcomingMovies;
+
   List<Movie> _searchResults = [];
   List<Movie> get searchResults => _searchResults;
 
@@ -17,12 +23,25 @@ class MovieProvider extends ChangeNotifier {
   String _errorMessage = '';
   String get errorMessage => _errorMessage;
 
-  Future<void> fetchTrendingMovies() async {
+  List<Movie> get allMovies => [
+    ..._trendingMovies,
+    ..._popularMovies,
+    ..._upcomingMovies,
+  ];
+
+  Future<void> fetchAllMovies() async {
     _isLoading = true;
     notifyListeners();
 
     try {
-      _trendingMovies = await _apiService.getTrendingMovies();
+      final results = await Future.wait([
+        _apiService.getTrendingMovies(),
+        _apiService.getPopularMovies(),
+        _apiService.getUpcomingMovies(),
+      ]);
+      _trendingMovies = results[0];
+      _popularMovies = results[1];
+      _upcomingMovies = results[2];
       _errorMessage = '';
     } catch (e) {
       _errorMessage = e.toString();
