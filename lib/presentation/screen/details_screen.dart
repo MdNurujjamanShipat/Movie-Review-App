@@ -22,7 +22,9 @@ class _DetailsScreenState extends State<DetailsScreen> {
   @override
   void initState() {
     super.initState();
-    _fetchMovieDetails();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _fetchMovieDetails();
+    });
   }
 
   void _fetchMovieDetails() async {
@@ -145,6 +147,15 @@ class _DetailsScreenState extends State<DetailsScreen> {
                             ),
                           )
                           .toList(),
+                    ),
+                  if (isLoading)
+                    const Padding(
+                      padding: EdgeInsets.symmetric(vertical: 16.0),
+                      child: Center(
+                        child: CircularProgressIndicator(
+                          color: AppColors.primary,
+                        ),
+                      ),
                     ),
                 ],
               ),
